@@ -1,0 +1,235 @@
+---
+title: "How to make your own heuristic"
+author: "Jean Czerlinski Whitmore"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{How to make your own heuristic}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r}
+library(heuristica)
+```
+
+
+So you have your own idea for a heuristic.  Just implement a few functions-- a fitting function and a predicting function-- and you can evaluate performance with heuristica and compare it with other models.
+
+## A toy model
+
+### Fitting function
+
+First, write a function to fit data.  All of the heuristica models have three required arguments, and they are recommended:
+
+1. train_data.  This is the data to train on and can be either a matrix or data.frame
+2 criterion_col.  The index of the criterion column, the "Y" in a regression.
+3. cols_to_fit.  A vector of indexes of columns to fit, the "X's" in a regression.
+
+The function is required to output a structure with these elements:
+
+* criterion_col for heuristica to use to subset data in prediction
+* cols_to_fit for heuristica to use to subset data in prediction
+* A class name the same as your function name, "myRandModel" in this case.
+
+You can also output:
+
+* Any information your predictor function will need, such as fitted parameters.
+
+In this vignette, we will build a bare bones model first (and a more
+realistic model later).  This model has no extra parameters in its fit:
+
+```{r}
+myRandModel <- function(train_data, criterion_col, cols_to_fit) {
+  # We will fill in a more interesting version below.
+  structure(list(criterion_col=criterion_col, cols_to_fit=cols_to_fit),
+            class="myRandModel")
+}
+```
+
+The class name-- myRandModel-- will tell heuristica how to find the
+predicting functions.  But if you are curious, you can read more about [S3 classes](http://adv-r.had.co.nz/OO-essentials.html).
+
+### Prediction functions
+
+Most statistical models in R implement "predict," which takes N rows of data and outputs N predictions.  Heuristica, however, is focused on predicting *pairs* of rows, so its models implement a "predict pair" function.  Two rows are passed in, row1 or row2, and the model must predict which has a higher criterion.  This is a categorical question: row1 or row2?  Some models answer this by first estimating the criterion for the two rows, which is quantitative, but models like Take The Best do not.
+
+#### Writing PredictPairInternal
+
+PredictPair refers to predicting which of the pair of rows, row1 or row2, is greater.  In this case the outputs have the following meaning:
+
+* 1 means row 1 is greater.
+* 0 means they are the same or it guesses.
+* -1 means row 2 is greater (that is, the rows should be reversed).
+
+To make predictions with heuristica, implement a function called predictPairInternal.yourClassName.  The "internal" in the name is supposed to indicate that you never call this function yourself-- you call predictPair instead.  The inputs for this function should be:
+
+* object, which will be the class structure returned by your fitting function.
+* row1, one row of a matrix or data.frame having just the columns in cols_to_fit.
+* row2, another row of a matrix or data.frame having just the columns in cols_to_fit.
+
+The output should be:
+
+* A value in -1, 0, 1.
+
+If you output anything else, the aggregating functions will not correctly calculate accuracy.
+
+For our bare-bones example, we will randomly guess -1 or 1.  1 means we predict the criterion in row1 will be greater. -1 means we predict the criterion in row2 will be greater-- that is, the rows should be reversed.
+
+```{r}
+predictPairInternal.myRandModel <- function(object, row1, row2) {
+  prob <- runif(1)
+  if (prob > 0.5) {
+    return(1)
+  } else {
+    return(-1)
+  }
+}
+```
+
+#### Using PredictPair
+
+Now to use this function, we call predictPair and pass in the fitted model.  We could call predictPairInternal directly, but predictPair takes care of some housekeeping.  (It calls `predictPairInternal(object, row1[cols_to_fit], row2[cols_to_fit])`, makes sure the output has the dimension of one row, names its column with the model class or `fit_name`.)  Let's get some data and run our model on it.
+
+Consider a subset of the high school dropout data included with this package, focusing on just 5 schools.  The first column has the school name.  The drop-out rates are in column 2, and we will fit them using columns 3-5, namely Enrollment, Attendance Rate, and Low Income Students.
+```{r}
+data("highschool_dropout")
+schools <- highschool_dropout[c(1:5), c(1,4,6,7,11)]
+schools
+```
+
+To analyze myRandModel on this data requires these steps:
+1. "Fit" myModel to the schools data.
+2. Ask the model to predict whether Austin has a higher dropout rate than Farrgut (the first two schools in our data).
+
+```{r}
+myFit <- myRandModel(schools, 2, c(3:5))
+row1 <- oneRow(schools, 1)
+row1
+row2 <- oneRow(schools, 2)
+row2
+predictPair(row1, row2, myFit)
+```
+
+We can see in the original data.frame that Austin had the higher dropout rate, meaning 1 would have been correct output.  We can get heuristica to show this using a more general rowPair function to view the correct choice based on the criterion-- which we tell it is in row 2 using correctGrater.  It outputs the correct answer of the rowPair, which could be -1 or 1, and we see it turned out to be 1.
+```{r}
+myFit <- myRandModel(schools, 2, c(3:5))
+myData <- rbind(oneRow(schools, 1), oneRow(schools, 2))
+rowPairApply(myData, correctGreater(2), heuristics(myFit))
+```
+
+What if we want to see results for all pairs of the first 5 schools?  Use rowPairApply.
+
+```{r}
+rowPairApply(schools, correctGreater(2), heuristics(myFit))
+```
+
+This outputs 10 predictions because there are 5*4/2 = 10 row pairs for 5 schools.  Notice that because the data is sorted, CorrectGreater is always 1.  (If we had a different sorting, we would see some -1's.)
+
+#### Performance
+
+Heuristica can assess the performance of this categorizing of ranking.  First, there is a confusion matrix, as in many machine learning problems, except this one assumes you always want to see the output for -1, 0, 1 always.  We need to give it the correct answers, which are based on column 2, so we use correctGreater(2).  And we need to give it the predictions, which we generate with heuristics(myFit).  We pass these generators into rowPairApply.  Then we send the output to our confusion matrix function.
+
+```{r}
+set.seed(1)
+predictions <- data.frame(rowPairApply(schools, correctGreater(2), heuristics(myFit)))
+confusionMatrixFor_Neg1_0_1(predictions$CorrectGreater, predictions$myRandModel)
+```
+
+Assuming you used the same random seed as this module, the matrix shows that out of the 10 cases, 6 were predicted correctly (the prediction was 1 and the correct answer was 1) and 4 were not (the prediction was -1 but the correct answer was 1).
+
+What percent correct is this?  In this case, it's an easy division of 6/10 = 0.6.  But you can get this result in one step-- for many fitted models-- with percentCorrect.  Below is the call (with the random seed set again).
+
+```{r}
+set.seed(1)
+myFit <- myRandModel(schools, 2, c(3:5))
+percentCorrect(schools, myFit)
+```
+
+## Wrapping lasso regression
+
+That was a toy example.  What if you want to wrap a real model, like lasso regression?  That is implemented in another package, glmnet, so if necessary, install it.
+```{r}
+# install.packages("glmnet")
+library(glmnet)
+```
+
+### Fitting function
+
+The fitting function is easy.  Wrap the lasso regression and then add just a little bit of extra information, including the subclass name, criterion column, and columns to fit.  Be sure to keep the class of the original output!
+
+```{r}
+lassoModel <- function(train_data, criterion_col, cols_to_fit) {
+  # glmnet can only handle matrices, not data.frames.
+  cvfit <- suppressWarnings(cv.glmnet(y=as.matrix(train_data[,criterion_col]),
+                                      x=as.matrix(train_data[,cols_to_fit])))
+  # Make lassoModel a subclass.  Be sure to keep the original class, glmnet.
+  class(cvfit) <- c("lassoModel", class(cvfit))
+  # Functions in this package require criterion_col and cols_to_fit.
+  cvfit$criterion_col <- criterion_col
+  cvfit$cols_to_fit <- cols_to_fit
+  return(cvfit)
+}
+```
+
+A fit should now include the extra information we add.
+```{r}
+my_data <- cbind(y=c(4, 3, 2, 1), x1=c(1.2, 1.1, 1.0, 1.0), x2=c(1, 0, 1, 1))
+lasso <- lassoModel(my_data, 1, c(2,3))
+lasso$criterion_col
+# Should output 1
+lasso$cols_to_fit
+# Should output 2 3
+class(lasso)
+# should output "lassoModel" "cv.glmnet"
+```
+
+And if you correctly kept the original glmnet class, you can still use all the functions it offers.
+```{r}
+coef(lasso)
+predict(lasso, my_data[,lasso$cols_to_fit])
+```
+
+### Predicting function
+
+The task is selecting between two rows, so lasso should predict each row and choose the one with the higher criterion.  Below is an example implementation of predictPairInternal that will work, although it is not very efficient.
+
+```{r}
+predictPairInternal.lassoModel <- function(object, row1, row2) {
+  p1 <- predict(object, as.matrix(row1))
+  p2 <- predict(object, as.matrix(row2))
+  if (p1 > p2) {
+    return(1)
+  } else if (p1 < p2) {
+    return(-1)
+  } else {
+    return(0)
+  }
+}
+```
+
+
+### Using the new model
+
+First, prove we can predict one row pair.
+
+```{r}
+predictPair(oneRow(my_data, 1), oneRow(my_data, 2), lasso)
+```
+
+Now predict all row pairs in our data set.  It got 91% correct-- pretty good!
+```{r}
+percentCorrect(my_data, lasso)
+```
+
+Which comparison did it miss?  Check out the helper function below.  We predict all row pairs and then find the row pairs where Lasso did not agree with the Correct answer.  Lasso missed only one comparison, namely row 3 vs. row 4, where it guessed.  It predicted the other 5 row pairs correctly!
+```{r}
+out <- data.frame(rowPairApply(my_data, rowIndexes(), heuristics(lasso), correctGreater(lasso$criterion_col)))
+out[out$lassoModel != out$CorrectGreater,]
+```
+
+### Improving performance
+
+If you run lasso's predictions for even a moderately large data set, it will take a while.  For example, for the schools data set, it took 20 seconds on a Macbook air.
+
+The solution is to make the prediction step purely a matrix calculation.  (This might require saving and caching extra information in the fitting step so it does not have to be recalculated on every prediction.)
