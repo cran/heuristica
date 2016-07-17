@@ -58,6 +58,46 @@ predictPairSummary <- function(test_data, ...) {
   return(predictions)
 }
 
+# In the simplest case, if all heuristics have the same cols_to_fit, returns
+# list(heuristicsList(fitted_heuristic_list), fn).
+# If the heuristics have differing col_to_fit, there are put in separate
+# heursticsList() groups, with order preserved.
+# It will throw an error if any heuristics disagree on the criterion_col.
+# fitted_heuristic_list: list of fitted heuristics
+# fn: the function to pass to heuristicsList, e.g. predictPairInternal
+# private
+heuristicsListGroupedByColsToFit <- function(fitted_heuristic_list, fn) {
+  if (length(fitted_heuristic_list) == 0) {
+    stop("No fitted heuristics in list")
+  }
+  criterion_col <- fitted_heuristic_list[[1]]$criterion_col
+  cols_to_fit <- fitted_heuristic_list[[1]]$cols_to_fit
+  all_fn_creator_list <- list()
+  implementer_list <- list()
+  for (implementer in fitted_heuristic_list) {
+    if (! isTRUE(all.equal(criterion_col, implementer$criterion_col)) ) {
+      stop(paste("ERROR: Models with different criterion_col:", criterion_col,
+                 "vs.", implementer$criterion_col, "."))
+    }
+    
+    if (isTRUE(all.equal(cols_to_fit, implementer$cols_to_fit)) ) {
+      # If cols_to_fit agree, they can be in the same list together.
+      implementer_list[[length(implementer_list)+1]] <- implementer
+    } else {
+      # We detected an implementer with different cols_to_fit.
+      # Finish off the previous list and start a new one.
+      temp <- heuristicsList(implementer_list, fn=predictPairInternal)
+      all_fn_creator_list[[length(all_fn_creator_list)+1]] <- temp
+      implementer_list <- list(implementer)
+      cols_to_fit <- implementer$cols_to_fit
+    }
+  }
+  # Finish off any remaining implementers.
+  all_fn_creator_list[[length(all_fn_creator_list)+1]] <-
+    heuristicsList(implementer_list, fn=predictPairInternal)
+  return(all_fn_creator_list)
+}
+
 #' Percent correct of heuristics' predictPair on test_data, returning a matrix.
 #'
 #' @param test_data Data to try to predict.  Must have same criterion column
@@ -76,12 +116,13 @@ predictPairSummary <- function(test_data, ...) {
 #'   data.frame and includes several examples.
 #' @export
 percentCorrectListReturnMatrix <- function(test_data, fitted_heuristic_list) {
-  # Assume the criterion_col is same for all heuristics.
+  heuristic_fn_creator_list <- heuristicsListGroupedByColsToFit(fitted_heuristic_list)
+  # The prior function ensured all heuristics have the same criterion_col, so get it
+  # from any heuristic.
   criterion_col <- fitted_heuristic_list[[1]]$criterion_col
+  all_fn_creator_list <- c(list(correctGreater(criterion_col)),
+                           heuristic_fn_creator_list)
   
-  all_fn_creator_list <- list(
-    correctGreater(criterion_col),
-    heuristicsList(fitted_heuristic_list, fn=predictPairInternal))
   predictions <- rowPairApplyList(test_data, all_fn_creator_list,
                                   also_reverse_row_pairs=FALSE)
   

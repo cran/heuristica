@@ -12,7 +12,7 @@
 
 <meta name="author" content="Jean Czerlinski Whitmore" />
 
-<meta name="date" content="2016-06-17" />
+<meta name="date" content="2016-07-17" />
 
 <title>Confusion Matrix</title>
 
@@ -20,28 +20,46 @@
 
 <style type="text/css">code{white-space: pre;}</style>
 <style type="text/css">
+div.sourceCode { overflow-x: auto; }
 table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
   margin: 0; padding: 0; vertical-align: baseline; border: none; }
 table.sourceCode { width: 100%; line-height: 100%; }
 td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
 td.sourceCode { padding-left: 5px; }
-code > span.kw { color: #007020; font-weight: bold; }
-code > span.dt { color: #902000; }
-code > span.dv { color: #40a070; }
-code > span.bn { color: #40a070; }
-code > span.fl { color: #40a070; }
-code > span.ch { color: #4070a0; }
-code > span.st { color: #4070a0; }
-code > span.co { color: #60a0b0; font-style: italic; }
-code > span.ot { color: #007020; }
-code > span.al { color: #ff0000; font-weight: bold; }
-code > span.fu { color: #06287e; }
-code > span.er { color: #ff0000; font-weight: bold; }
+code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code > span.dt { color: #902000; } /* DataType */
+code > span.dv { color: #40a070; } /* DecVal */
+code > span.bn { color: #40a070; } /* BaseN */
+code > span.fl { color: #40a070; } /* Float */
+code > span.ch { color: #4070a0; } /* Char */
+code > span.st { color: #4070a0; } /* String */
+code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code > span.ot { color: #007020; } /* Other */
+code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code > span.fu { color: #06287e; } /* Function */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #880000; } /* Constant */
+code > span.sc { color: #4070a0; } /* SpecialChar */
+code > span.vs { color: #4070a0; } /* VerbatimString */
+code > span.ss { color: #bb6688; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #19177c; } /* Variable */
+code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #666666; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #bc7a00; } /* Preprocessor */
+code > span.at { color: #7d9029; } /* Attribute */
+code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
 </style>
 
 
 
-<link href="data:text/css,body%20%7B%0A%20%20background%2Dcolor%3A%20%23fff%3B%0A%20%20margin%3A%201em%20auto%3B%0A%20%20max%2Dwidth%3A%20700px%3B%0A%20%20overflow%3A%20visible%3B%0A%20%20padding%2Dleft%3A%202em%3B%0A%20%20padding%2Dright%3A%202em%3B%0A%20%20font%2Dfamily%3A%20%22Open%20Sans%22%2C%20%22Helvetica%20Neue%22%2C%20Helvetica%2C%20Arial%2C%20sans%2Dserif%3B%0A%20%20font%2Dsize%3A%2014px%3B%0A%20%20line%2Dheight%3A%201%2E35%3B%0A%7D%0A%0A%23header%20%7B%0A%20%20text%2Dalign%3A%20center%3B%0A%7D%0A%0A%23TOC%20%7B%0A%20%20clear%3A%20both%3B%0A%20%20margin%3A%200%200%2010px%2010px%3B%0A%20%20padding%3A%204px%3B%0A%20%20width%3A%20400px%3B%0A%20%20border%3A%201px%20solid%20%23CCCCCC%3B%0A%20%20border%2Dradius%3A%205px%3B%0A%0A%20%20background%2Dcolor%3A%20%23f6f6f6%3B%0A%20%20font%2Dsize%3A%2013px%3B%0A%20%20line%2Dheight%3A%201%2E3%3B%0A%7D%0A%20%20%23TOC%20%2Etoctitle%20%7B%0A%20%20%20%20font%2Dweight%3A%20bold%3B%0A%20%20%20%20font%2Dsize%3A%2015px%3B%0A%20%20%20%20margin%2Dleft%3A%205px%3B%0A%20%20%7D%0A%0A%20%20%23TOC%20ul%20%7B%0A%20%20%20%20padding%2Dleft%3A%2040px%3B%0A%20%20%20%20margin%2Dleft%3A%20%2D1%2E5em%3B%0A%20%20%20%20margin%2Dtop%3A%205px%3B%0A%20%20%20%20margin%2Dbottom%3A%205px%3B%0A%20%20%7D%0A%20%20%23TOC%20ul%20ul%20%7B%0A%20%20%20%20margin%2Dleft%3A%20%2D2em%3B%0A%20%20%7D%0A%20%20%23TOC%20li%20%7B%0A%20%20%20%20line%2Dheight%3A%2016px%3B%0A%20%20%7D%0A%0Atable%20%7B%0A%20%20margin%3A%201em%20auto%3B%0A%20%20border%2Dwidth%3A%201px%3B%0A%20%20border%2Dcolor%3A%20%23DDDDDD%3B%0A%20%20border%2Dstyle%3A%20outset%3B%0A%20%20border%2Dcollapse%3A%20collapse%3B%0A%7D%0Atable%20th%20%7B%0A%20%20border%2Dwidth%3A%202px%3B%0A%20%20padding%3A%205px%3B%0A%20%20border%2Dstyle%3A%20inset%3B%0A%7D%0Atable%20td%20%7B%0A%20%20border%2Dwidth%3A%201px%3B%0A%20%20border%2Dstyle%3A%20inset%3B%0A%20%20line%2Dheight%3A%2018px%3B%0A%20%20padding%3A%205px%205px%3B%0A%7D%0Atable%2C%20table%20th%2C%20table%20td%20%7B%0A%20%20border%2Dleft%2Dstyle%3A%20none%3B%0A%20%20border%2Dright%2Dstyle%3A%20none%3B%0A%7D%0Atable%20thead%2C%20table%20tr%2Eeven%20%7B%0A%20%20background%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0A%0Ap%20%7B%0A%20%20margin%3A%200%2E5em%200%3B%0A%7D%0A%0Ablockquote%20%7B%0A%20%20background%2Dcolor%3A%20%23f6f6f6%3B%0A%20%20padding%3A%200%2E25em%200%2E75em%3B%0A%7D%0A%0Ahr%20%7B%0A%20%20border%2Dstyle%3A%20solid%3B%0A%20%20border%3A%20none%3B%0A%20%20border%2Dtop%3A%201px%20solid%20%23777%3B%0A%20%20margin%3A%2028px%200%3B%0A%7D%0A%0Adl%20%7B%0A%20%20margin%2Dleft%3A%200%3B%0A%7D%0A%20%20dl%20dd%20%7B%0A%20%20%20%20margin%2Dbottom%3A%2013px%3B%0A%20%20%20%20margin%2Dleft%3A%2013px%3B%0A%20%20%7D%0A%20%20dl%20dt%20%7B%0A%20%20%20%20font%2Dweight%3A%20bold%3B%0A%20%20%7D%0A%0Aul%20%7B%0A%20%20margin%2Dtop%3A%200%3B%0A%7D%0A%20%20ul%20li%20%7B%0A%20%20%20%20list%2Dstyle%3A%20circle%20outside%3B%0A%20%20%7D%0A%20%20ul%20ul%20%7B%0A%20%20%20%20margin%2Dbottom%3A%200%3B%0A%20%20%7D%0A%0Apre%2C%20code%20%7B%0A%20%20background%2Dcolor%3A%20%23f7f7f7%3B%0A%20%20border%2Dradius%3A%203px%3B%0A%20%20color%3A%20%23333%3B%0A%20%20white%2Dspace%3A%20pre%2Dwrap%3B%20%20%20%20%2F%2A%20Wrap%20long%20lines%20%2A%2F%0A%7D%0Apre%20%7B%0A%20%20border%2Dradius%3A%203px%3B%0A%20%20margin%3A%205px%200px%2010px%200px%3B%0A%20%20padding%3A%2010px%3B%0A%7D%0Apre%3Anot%28%5Bclass%5D%29%20%7B%0A%20%20background%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0A%0Acode%20%7B%0A%20%20font%2Dfamily%3A%20Consolas%2C%20Monaco%2C%20%27Courier%20New%27%2C%20monospace%3B%0A%20%20font%2Dsize%3A%2085%25%3B%0A%7D%0Ap%20%3E%20code%2C%20li%20%3E%20code%20%7B%0A%20%20padding%3A%202px%200px%3B%0A%7D%0A%0Adiv%2Efigure%20%7B%0A%20%20text%2Dalign%3A%20center%3B%0A%7D%0Aimg%20%7B%0A%20%20background%2Dcolor%3A%20%23FFFFFF%3B%0A%20%20padding%3A%202px%3B%0A%20%20border%3A%201px%20solid%20%23DDDDDD%3B%0A%20%20border%2Dradius%3A%203px%3B%0A%20%20border%3A%201px%20solid%20%23CCCCCC%3B%0A%20%20margin%3A%200%205px%3B%0A%7D%0A%0Ah1%20%7B%0A%20%20margin%2Dtop%3A%200%3B%0A%20%20font%2Dsize%3A%2035px%3B%0A%20%20line%2Dheight%3A%2040px%3B%0A%7D%0A%0Ah2%20%7B%0A%20%20border%2Dbottom%3A%204px%20solid%20%23f7f7f7%3B%0A%20%20padding%2Dtop%3A%2010px%3B%0A%20%20padding%2Dbottom%3A%202px%3B%0A%20%20font%2Dsize%3A%20145%25%3B%0A%7D%0A%0Ah3%20%7B%0A%20%20border%2Dbottom%3A%202px%20solid%20%23f7f7f7%3B%0A%20%20padding%2Dtop%3A%2010px%3B%0A%20%20font%2Dsize%3A%20120%25%3B%0A%7D%0A%0Ah4%20%7B%0A%20%20border%2Dbottom%3A%201px%20solid%20%23f7f7f7%3B%0A%20%20margin%2Dleft%3A%208px%3B%0A%20%20font%2Dsize%3A%20105%25%3B%0A%7D%0A%0Ah5%2C%20h6%20%7B%0A%20%20border%2Dbottom%3A%201px%20solid%20%23ccc%3B%0A%20%20font%2Dsize%3A%20105%25%3B%0A%7D%0A%0Aa%20%7B%0A%20%20color%3A%20%230033dd%3B%0A%20%20text%2Ddecoration%3A%20none%3B%0A%7D%0A%20%20a%3Ahover%20%7B%0A%20%20%20%20color%3A%20%236666ff%3B%20%7D%0A%20%20a%3Avisited%20%7B%0A%20%20%20%20color%3A%20%23800080%3B%20%7D%0A%20%20a%3Avisited%3Ahover%20%7B%0A%20%20%20%20color%3A%20%23BB00BB%3B%20%7D%0A%20%20a%5Bhref%5E%3D%22http%3A%22%5D%20%7B%0A%20%20%20%20text%2Ddecoration%3A%20underline%3B%20%7D%0A%20%20a%5Bhref%5E%3D%22https%3A%22%5D%20%7B%0A%20%20%20%20text%2Ddecoration%3A%20underline%3B%20%7D%0A%0A%2F%2A%20Class%20described%20in%20https%3A%2F%2Fbenjeffrey%2Ecom%2Fposts%2Fpandoc%2Dsyntax%2Dhighlighting%2Dcss%0A%20%20%20Colours%20from%20https%3A%2F%2Fgist%2Egithub%2Ecom%2Frobsimmons%2F1172277%20%2A%2F%0A%0Acode%20%3E%20span%2Ekw%20%7B%20color%3A%20%23555%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%2F%2A%20Keyword%20%2A%2F%0Acode%20%3E%20span%2Edt%20%7B%20color%3A%20%23902000%3B%20%7D%20%2F%2A%20DataType%20%2A%2F%0Acode%20%3E%20span%2Edv%20%7B%20color%3A%20%2340a070%3B%20%7D%20%2F%2A%20DecVal%20%28decimal%20values%29%20%2A%2F%0Acode%20%3E%20span%2Ebn%20%7B%20color%3A%20%23d14%3B%20%7D%20%2F%2A%20BaseN%20%2A%2F%0Acode%20%3E%20span%2Efl%20%7B%20color%3A%20%23d14%3B%20%7D%20%2F%2A%20Float%20%2A%2F%0Acode%20%3E%20span%2Ech%20%7B%20color%3A%20%23d14%3B%20%7D%20%2F%2A%20Char%20%2A%2F%0Acode%20%3E%20span%2Est%20%7B%20color%3A%20%23d14%3B%20%7D%20%2F%2A%20String%20%2A%2F%0Acode%20%3E%20span%2Eco%20%7B%20color%3A%20%23888888%3B%20font%2Dstyle%3A%20italic%3B%20%7D%20%2F%2A%20Comment%20%2A%2F%0Acode%20%3E%20span%2Eot%20%7B%20color%3A%20%23007020%3B%20%7D%20%2F%2A%20OtherToken%20%2A%2F%0Acode%20%3E%20span%2Eal%20%7B%20color%3A%20%23ff0000%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%2F%2A%20AlertToken%20%2A%2F%0Acode%20%3E%20span%2Efu%20%7B%20color%3A%20%23900%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%2F%2A%20Function%20calls%20%2A%2F%20%0Acode%20%3E%20span%2Eer%20%7B%20color%3A%20%23a61717%3B%20background%2Dcolor%3A%20%23e3d2d2%3B%20%7D%20%2F%2A%20ErrorTok%20%2A%2F%0A%0A" rel="stylesheet" type="text/css" />
+<link href="data:text/css;charset=utf-8,body%20%7B%0Abackground%2Dcolor%3A%20%23fff%3B%0Amargin%3A%201em%20auto%3B%0Amax%2Dwidth%3A%20700px%3B%0Aoverflow%3A%20visible%3B%0Apadding%2Dleft%3A%202em%3B%0Apadding%2Dright%3A%202em%3B%0Afont%2Dfamily%3A%20%22Open%20Sans%22%2C%20%22Helvetica%20Neue%22%2C%20Helvetica%2C%20Arial%2C%20sans%2Dserif%3B%0Afont%2Dsize%3A%2014px%3B%0Aline%2Dheight%3A%201%2E35%3B%0A%7D%0A%23header%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0A%23TOC%20%7B%0Aclear%3A%20both%3B%0Amargin%3A%200%200%2010px%2010px%3B%0Apadding%3A%204px%3B%0Awidth%3A%20400px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Aborder%2Dradius%3A%205px%3B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Afont%2Dsize%3A%2013px%3B%0Aline%2Dheight%3A%201%2E3%3B%0A%7D%0A%23TOC%20%2Etoctitle%20%7B%0Afont%2Dweight%3A%20bold%3B%0Afont%2Dsize%3A%2015px%3B%0Amargin%2Dleft%3A%205px%3B%0A%7D%0A%23TOC%20ul%20%7B%0Apadding%2Dleft%3A%2040px%3B%0Amargin%2Dleft%3A%20%2D1%2E5em%3B%0Amargin%2Dtop%3A%205px%3B%0Amargin%2Dbottom%3A%205px%3B%0A%7D%0A%23TOC%20ul%20ul%20%7B%0Amargin%2Dleft%3A%20%2D2em%3B%0A%7D%0A%23TOC%20li%20%7B%0Aline%2Dheight%3A%2016px%3B%0A%7D%0Atable%20%7B%0Amargin%3A%201em%20auto%3B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dcolor%3A%20%23DDDDDD%3B%0Aborder%2Dstyle%3A%20outset%3B%0Aborder%2Dcollapse%3A%20collapse%3B%0A%7D%0Atable%20th%20%7B%0Aborder%2Dwidth%3A%202px%3B%0Apadding%3A%205px%3B%0Aborder%2Dstyle%3A%20inset%3B%0A%7D%0Atable%20td%20%7B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dstyle%3A%20inset%3B%0Aline%2Dheight%3A%2018px%3B%0Apadding%3A%205px%205px%3B%0A%7D%0Atable%2C%20table%20th%2C%20table%20td%20%7B%0Aborder%2Dleft%2Dstyle%3A%20none%3B%0Aborder%2Dright%2Dstyle%3A%20none%3B%0A%7D%0Atable%20thead%2C%20table%20tr%2Eeven%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Ap%20%7B%0Amargin%3A%200%2E5em%200%3B%0A%7D%0Ablockquote%20%7B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Apadding%3A%200%2E25em%200%2E75em%3B%0A%7D%0Ahr%20%7B%0Aborder%2Dstyle%3A%20solid%3B%0Aborder%3A%20none%3B%0Aborder%2Dtop%3A%201px%20solid%20%23777%3B%0Amargin%3A%2028px%200%3B%0A%7D%0Adl%20%7B%0Amargin%2Dleft%3A%200%3B%0A%7D%0Adl%20dd%20%7B%0Amargin%2Dbottom%3A%2013px%3B%0Amargin%2Dleft%3A%2013px%3B%0A%7D%0Adl%20dt%20%7B%0Afont%2Dweight%3A%20bold%3B%0A%7D%0Aul%20%7B%0Amargin%2Dtop%3A%200%3B%0A%7D%0Aul%20li%20%7B%0Alist%2Dstyle%3A%20circle%20outside%3B%0A%7D%0Aul%20ul%20%7B%0Amargin%2Dbottom%3A%200%3B%0A%7D%0Apre%2C%20code%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0Aborder%2Dradius%3A%203px%3B%0Acolor%3A%20%23333%3B%0Awhite%2Dspace%3A%20pre%2Dwrap%3B%20%0A%7D%0Apre%20%7B%0Aborder%2Dradius%3A%203px%3B%0Amargin%3A%205px%200px%2010px%200px%3B%0Apadding%3A%2010px%3B%0A%7D%0Apre%3Anot%28%5Bclass%5D%29%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Acode%20%7B%0Afont%2Dfamily%3A%20Consolas%2C%20Monaco%2C%20%27Courier%20New%27%2C%20monospace%3B%0Afont%2Dsize%3A%2085%25%3B%0A%7D%0Ap%20%3E%20code%2C%20li%20%3E%20code%20%7B%0Apadding%3A%202px%200px%3B%0A%7D%0Adiv%2Efigure%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0Aimg%20%7B%0Abackground%2Dcolor%3A%20%23FFFFFF%3B%0Apadding%3A%202px%3B%0Aborder%3A%201px%20solid%20%23DDDDDD%3B%0Aborder%2Dradius%3A%203px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Amargin%3A%200%205px%3B%0A%7D%0Ah1%20%7B%0Amargin%2Dtop%3A%200%3B%0Afont%2Dsize%3A%2035px%3B%0Aline%2Dheight%3A%2040px%3B%0A%7D%0Ah2%20%7B%0Aborder%2Dbottom%3A%204px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Apadding%2Dbottom%3A%202px%3B%0Afont%2Dsize%3A%20145%25%3B%0A%7D%0Ah3%20%7B%0Aborder%2Dbottom%3A%202px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Afont%2Dsize%3A%20120%25%3B%0A%7D%0Ah4%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23f7f7f7%3B%0Amargin%2Dleft%3A%208px%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Ah5%2C%20h6%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23ccc%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Aa%20%7B%0Acolor%3A%20%230033dd%3B%0Atext%2Ddecoration%3A%20none%3B%0A%7D%0Aa%3Ahover%20%7B%0Acolor%3A%20%236666ff%3B%20%7D%0Aa%3Avisited%20%7B%0Acolor%3A%20%23800080%3B%20%7D%0Aa%3Avisited%3Ahover%20%7B%0Acolor%3A%20%23BB00BB%3B%20%7D%0Aa%5Bhref%5E%3D%22http%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0Aa%5Bhref%5E%3D%22https%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0A%0Acode%20%3E%20span%2Ekw%20%7B%20color%3A%20%23555%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Edt%20%7B%20color%3A%20%23902000%3B%20%7D%20%0Acode%20%3E%20span%2Edv%20%7B%20color%3A%20%2340a070%3B%20%7D%20%0Acode%20%3E%20span%2Ebn%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Efl%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Ech%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Est%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Eco%20%7B%20color%3A%20%23888888%3B%20font%2Dstyle%3A%20italic%3B%20%7D%20%0Acode%20%3E%20span%2Eot%20%7B%20color%3A%20%23007020%3B%20%7D%20%0Acode%20%3E%20span%2Eal%20%7B%20color%3A%20%23ff0000%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Efu%20%7B%20color%3A%20%23900%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%20code%20%3E%20span%2Eer%20%7B%20color%3A%20%23a61717%3B%20background%2Dcolor%3A%20%23e3d2d2%3B%20%7D%20%0A" rel="stylesheet" type="text/css" />
 
 </head>
 
@@ -52,11 +70,11 @@ code > span.er { color: #ff0000; font-weight: bold; }
 
 <h1 class="title toc-ignore">Confusion Matrix</h1>
 <h4 class="author"><em>Jean Czerlinski Whitmore</em></h4>
-<h4 class="date"><em>2016-06-17</em></h4>
+<h4 class="date"><em>2016-07-17</em></h4>
 
 
 
-<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(heuristica)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(heuristica)</code></pre></div>
 <p>This is a topic for advanced users.</p>
 <p>Predicting between pairs produces categorical output: -1, 0, or 1. A (confusion matrix)[<a href="https://en.wikipedia.org/wiki/Confusion_matrix" class="uri">https://en.wikipedia.org/wiki/Confusion_matrix</a>] counts how many times the predicted category mapped to the various true categories. For example, it can be helpful to see that one heuristic had to guess (predict 0) more often than another. However, there are some quirks to applying confusion matrices to this task, and this vignette explains them.</p>
 <ul>
@@ -66,24 +84,24 @@ code > span.er { color: #ff0000; font-weight: bold; }
 <div id="running-reverse-row-pairs" class="section level1">
 <h1>Running reverse row pairs</h1>
 <p>Here is some data we will use for an example– the city population data.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">data</span>(<span class="st">&quot;city_population&quot;</span>)
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">data</span>(<span class="st">&quot;city_population&quot;</span>)
 data_set &lt;-<span class="st"> </span><span class="kw">na.omit</span>(city_population)
 criterion_col &lt;-<span class="st"> </span><span class="dv">3</span>
-cols_to_fit &lt;-<span class="st"> </span><span class="dv">4</span>:<span class="kw">ncol</span>(data_set)</code></pre>
+cols_to_fit &lt;-<span class="st"> </span><span class="dv">4</span>:<span class="kw">ncol</span>(data_set)</code></pre></div>
 <p>Next, the code below fits Take the Best and regression on a subset of this data. (For this example, five rows were selected, but in practice the training rows would be randomly sampled. Furthermore, the predictions would be measured on non-training data.)</p>
-<pre class="sourceCode r"><code class="sourceCode r">num_training_rows &lt;-<span class="st"> </span><span class="dv">5</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">num_training_rows &lt;-<span class="st"> </span><span class="dv">5</span>
 train_data &lt;-<span class="st"> </span>city_population[<span class="kw">c</span>(<span class="dv">3</span>:(<span class="dv">3</span>+num_training_rows)),]
 ttb &lt;-<span class="st"> </span><span class="kw">ttbModel</span>(train_data, criterion_col, cols_to_fit)
 reg &lt;-<span class="st"> </span><span class="kw">regModel</span>(train_data, criterion_col, cols_to_fit)
-lreg &lt;-<span class="st"> </span><span class="kw">logRegModel</span>(train_data, criterion_col, cols_to_fit)</code></pre>
+lreg &lt;-<span class="st"> </span><span class="kw">logRegModel</span>(train_data, criterion_col, cols_to_fit)</code></pre></div>
 <div id="analyzing-just-forward-row-pairs" class="section level2">
 <h2>Analyzing just “forward” row pairs</h2>
 <p>We normally use <code>predictPairSummary</code>, but it gains efficiency by appling the functions to only one set of unique row pairs, e.g. Munich vs. Cologne. Below is the output with city names patched in.</p>
-<pre class="sourceCode r"><code class="sourceCode r">out_fwd_row_pairs_only &lt;-<span class="st"> </span><span class="kw">predictPairSummary</span>(train_data, ttb, reg, lreg)
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">out_fwd_row_pairs_only &lt;-<span class="st"> </span><span class="kw">predictPairSummary</span>(train_data, ttb, reg, lreg)
 fwd_df &lt;-<span class="st"> </span><span class="kw">data.frame</span>(out_fwd_row_pairs_only)
 fwd_df$Row1 &lt;-<span class="st"> </span>train_data$Name[fwd_df$Row1]
 fwd_df$Row2 &lt;-<span class="st"> </span>train_data$Name[fwd_df$Row2]
-fwd_df</code></pre>
+fwd_df</code></pre></div>
 <pre><code>##         Row1      Row2 CorrectGreater ttbModel regModel logRegModel
 ## 1     Munich   Cologne              1        0        1          -1
 ## 2     Munich Frankfurt              1        0        1          -1
@@ -101,23 +119,23 @@ fwd_df</code></pre>
 ## 14     Essen Stuttgart              1       -1       -1          -1
 ## 15  Dortmund Stuttgart              1       -1       -1          -1</code></pre>
 <p>Notice this has Munich vs. Cologne but not the other way around, Cologne vs. Frankfurt. Also, because the data set was sorted, all the values of “CorrectGreater” are always 1, never -1. Let’s refer to this as “forward pairs only.” The data is incomplete, but to understand better, let’s generate a confusion matrix for TakeTheBest’s predictions anyway.</p>
-<pre class="sourceCode r"><code class="sourceCode r">ref_data &lt;-<span class="st"> </span>out_fwd_row_pairs_only[,<span class="st">&quot;CorrectGreater&quot;</span>]
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ref_data &lt;-<span class="st"> </span>out_fwd_row_pairs_only[,<span class="st">&quot;CorrectGreater&quot;</span>]
 predictions &lt;-<span class="st"> </span>out_fwd_row_pairs_only[,<span class="st">&quot;ttbModel&quot;</span>]
-ttb_fwd_confusion_matrix &lt;-<span class="st"> </span><span class="kw">confusionMatrixFor_Neg1_0_1</span>(ref_data, predictions)</code></pre>
+ttb_fwd_confusion_matrix &lt;-<span class="st"> </span><span class="kw">confusionMatrixFor_Neg1_0_1</span>(ref_data, predictions)</code></pre></div>
 <p>Notice that only the last row, named “1,” has non-zero values. That is because the only category in CorrectGreater was “1”. (The function still produces rows for “-1” and “0” to ensure the output always has the same 3x3 shape for analysis.)</p>
 <p>The confusion matrix should also have data when CorrectGreater is -1, and we can get this data by generating predictions also for “reverse” row pairs, such as Cologne vs. Munich. Below we will see three ways to do that.</p>
 </div>
 <div id="generating-reverse-row-pairs" class="section level2">
 <h2>Generating “reverse” row pairs</h2>
 <p>The most straightforward way to generate both “forward” and “reverse” row pairs is to run predictPairSummary twice, once with the rows in the usual “forward” order and then again with the rows in “reverse”&quot; order, using the reverse order of row indices. Doing this below, we see that the Cologne vs. Munich comparison happened, and its CorrectGreater was indeed -1 (meaning the second city in the pair, Munich, was greater).</p>
-<pre class="sourceCode r"><code class="sourceCode r">out_fwd_row_pairs_only &lt;-<span class="st"> </span><span class="kw">predictPairSummary</span>(train_data, ttb, reg, lreg)
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">out_fwd_row_pairs_only &lt;-<span class="st"> </span><span class="kw">predictPairSummary</span>(train_data, ttb, reg, lreg)
 train_data_rev_rows &lt;-<span class="st"> </span>train_data[<span class="kw">c</span>(<span class="kw">nrow</span>(train_data):<span class="dv">1</span>),]
 out_rev_row_pairs_only &lt;-<span class="st"> </span><span class="kw">predictPairSummary</span>(train_data_rev_rows, ttb, reg, lreg)
 out_both &lt;-<span class="st"> </span><span class="kw">rbind</span>(out_fwd_row_pairs_only, out_rev_row_pairs_only)
 both_df &lt;-<span class="st"> </span><span class="kw">data.frame</span>(out_both)
 both_df$Row1 &lt;-<span class="st"> </span>train_data$Name[both_df$Row1]
 both_df$Row2 &lt;-<span class="st"> </span>train_data$Name[both_df$Row2]
-both_df</code></pre>
+both_df</code></pre></div>
 <pre><code>##         Row1      Row2 CorrectGreater ttbModel regModel logRegModel
 ## 1     Munich   Cologne              1        0        1          -1
 ## 2     Munich Frankfurt              1        0        1          -1
@@ -150,9 +168,9 @@ both_df</code></pre>
 ## 29     Essen Stuttgart             -1        0       -1           1
 ## 30  Dortmund Stuttgart             -1        0       -1           1</code></pre>
 <p>With that output, we can generate a complete confusion matrix for Take The Best. It has non-zero data in both the first “-1” row and the last “1” row.</p>
-<pre class="sourceCode r"><code class="sourceCode r">ref_data &lt;-<span class="st"> </span>out_both[,<span class="st">&quot;CorrectGreater&quot;</span>]
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ref_data &lt;-<span class="st"> </span>out_both[,<span class="st">&quot;CorrectGreater&quot;</span>]
 predictions &lt;-<span class="st"> </span>out_both[,<span class="st">&quot;ttbModel&quot;</span>]
-<span class="kw">confusionMatrixFor_Neg1_0_1</span>(ref_data, predictions)</code></pre>
+<span class="kw">confusionMatrixFor_Neg1_0_1</span>(ref_data, predictions)</code></pre></div>
 <pre><code>##        predictions
 ## correct -1 0 1
 ##      -1  7 6 2
@@ -160,15 +178,15 @@ predictions &lt;-<span class="st"> </span>out_both[,<span class="st">&quot;ttbMo
 ##      1   2 6 7</code></pre>
 <p>You might notice a symmetry in this confusion matrix. For example, there are 7 cases where TTB accurately predicted 1 where the CorrectGreater value was 1. When these rows were reversed, they resulted in 7 cases where TTB accurately predicted -1 where the CorrectGreater value was -1. This happens because TTB is a symmetric model, meaning predictPair(Row1, Row2) = - predictPair(Row2, Row1). All the models included in heuristica have this property, which <code>percentCorrectSummary</code> exploits– that’s why it can get results with just the forward row pairs.</p>
 <p>We can also exploit model symmetry in calculating the confusion matrix. Calculate the confusion matrix based on just the forward row pairs, and you can infer the results for the reverse row pairs. Below is an example calculation.</p>
-<pre class="sourceCode r"><code class="sourceCode r">ttb_fwd_confusion_matrix +<span class="st"> </span><span class="kw">reverseRowsAndReverseColumns</span>(ttb_fwd_confusion_matrix)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ttb_fwd_confusion_matrix +<span class="st"> </span><span class="kw">reverseRowsAndReverseColumns</span>(ttb_fwd_confusion_matrix)</code></pre></div>
 <pre><code>##        predictions
 ## correct -1 0 1
 ##      -1  7 6 2
 ##      0   0 0 0
 ##      1   2 6 7</code></pre>
 <p>Yet another way to calculate this complete confusion matrix is to use the more flexible <code>rowPairApplyList</code> function (rather than <code>predictPairSummary</code>) to generate the prediction data. Specifically, set the optional parameter <code>also_reverse_row_pairs=TRUE</code>.</p>
-<pre class="sourceCode r"><code class="sourceCode r">out &lt;-<span class="st"> </span><span class="kw">rowPairApplyList</span>(train_data, <span class="kw">list</span>(<span class="kw">correctGreater</span>(criterion_col), <span class="kw">heuristics</span>(ttb, reg, lreg)), <span class="dt">also_reverse_row_pairs=</span><span class="ot">TRUE</span>)
-out</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">out &lt;-<span class="st"> </span><span class="kw">rowPairApplyList</span>(train_data, <span class="kw">list</span>(<span class="kw">correctGreater</span>(criterion_col), <span class="kw">heuristics</span>(ttb, reg, lreg)), <span class="dt">also_reverse_row_pairs=</span><span class="ot">TRUE</span>)
+out</code></pre></div>
 <pre><code>##       CorrectGreater ttbModel regModel logRegModel
 ##  [1,]              1        0        1          -1
 ##  [2,]              1        0        1          -1
@@ -201,9 +219,9 @@ out</code></pre>
 ## [29,]             -1        0       -1           1
 ## [30,]             -1        0       -1           1</code></pre>
 <p>Calculating Take The Best’s confusion matrix from this output produces the same result as above.</p>
-<pre class="sourceCode r"><code class="sourceCode r">ref_data &lt;-<span class="st"> </span>out[,<span class="st">&quot;CorrectGreater&quot;</span>]
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ref_data &lt;-<span class="st"> </span>out[,<span class="st">&quot;CorrectGreater&quot;</span>]
 predictions &lt;-<span class="st"> </span>out[,<span class="st">&quot;ttbModel&quot;</span>]
-<span class="kw">confusionMatrixFor_Neg1_0_1</span>(ref_data, predictions)</code></pre>
+<span class="kw">confusionMatrixFor_Neg1_0_1</span>(ref_data, predictions)</code></pre></div>
 <pre><code>##        predictions
 ## correct -1 0 1
 ##      -1  7 6 2
@@ -214,22 +232,22 @@ predictions &lt;-<span class="st"> </span>out[,<span class="st">&quot;ttbModel&q
 <div id="analyzing-output-of-the-three-models" class="section level2">
 <h2>Analyzing output of the three models</h2>
 <p>Now let’s analyze the confusion matrices for the three models we fit to the subset of the city population data. Below are their 3x3 confusion matrices based on the predictions with <code>also_reverse_row_pairs=TRUE</code>.</p>
-<pre class="sourceCode r"><code class="sourceCode r">confusion_matrix_3x3_ttb &lt;-<span class="st"> </span><span class="kw">confusionMatrixFor_Neg1_0_1</span>(out[,<span class="st">&quot;CorrectGreater&quot;</span>], out[,<span class="st">&quot;ttbModel&quot;</span>])
-confusion_matrix_3x3_ttb</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">confusion_matrix_3x3_ttb &lt;-<span class="st"> </span><span class="kw">confusionMatrixFor_Neg1_0_1</span>(out[,<span class="st">&quot;CorrectGreater&quot;</span>], out[,<span class="st">&quot;ttbModel&quot;</span>])
+confusion_matrix_3x3_ttb</code></pre></div>
 <pre><code>##        predictions
 ## correct -1 0 1
 ##      -1  7 6 2
 ##      0   0 0 0
 ##      1   2 6 7</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r">confusion_matrix_3x3_reg &lt;-<span class="st"> </span><span class="kw">confusionMatrixFor_Neg1_0_1</span>(out[,<span class="st">&quot;CorrectGreater&quot;</span>], out[,<span class="st">&quot;regModel&quot;</span>])
-confusion_matrix_3x3_reg</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">confusion_matrix_3x3_reg &lt;-<span class="st"> </span><span class="kw">confusionMatrixFor_Neg1_0_1</span>(out[,<span class="st">&quot;CorrectGreater&quot;</span>], out[,<span class="st">&quot;regModel&quot;</span>])
+confusion_matrix_3x3_reg</code></pre></div>
 <pre><code>##        predictions
 ## correct -1 0 1
 ##      -1  9 2 4
 ##      0   0 0 0
 ##      1   4 2 9</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r">confusion_matrix_3x3_lreg &lt;-<span class="st"> </span><span class="kw">confusionMatrixFor_Neg1_0_1</span>(out[,<span class="st">&quot;CorrectGreater&quot;</span>], out[,<span class="st">&quot;logRegModel&quot;</span>])
-confusion_matrix_3x3_lreg</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">confusion_matrix_3x3_lreg &lt;-<span class="st"> </span><span class="kw">confusionMatrixFor_Neg1_0_1</span>(out[,<span class="st">&quot;CorrectGreater&quot;</span>], out[,<span class="st">&quot;logRegModel&quot;</span>])
+confusion_matrix_3x3_lreg</code></pre></div>
 <pre><code>##        predictions
 ## correct -1 0 1
 ##      -1  9 2 4
@@ -237,8 +255,8 @@ confusion_matrix_3x3_lreg</code></pre>
 ##      1   4 2 9</code></pre>
 <p>Take The Best does worse on this data because it guesses much more than the regression models– 12 guesses (6+6) vs. only 4 (2+2). When TTB is not guessing, it is highly accurate, getting 7 correct for every 2 incorrect, an excellent ratio of 3.5. The regression models have a non-guessing correctness ration of 9 vs. 4 = 2.25. We will see in the next section the impact thes numbers have on the percent correct, but we will need a way to deal with guesses to do that.</p>
 <p>It interesting that regression and logistic regression have the exact same confusion matrix, even though the output showed they sometimes disagreed. Below are the cases where they diagreed, and we see that their correct and incorrect values exactly balance out. Notice also that these were rows that Take The Best guessed on, deeming them too hard to distinguish.</p>
-<pre class="sourceCode r"><code class="sourceCode r">out_df &lt;-<span class="st"> </span><span class="kw">data.frame</span>(out)
-out_df[out_df$regModel !=<span class="st"> </span>out_df$logRegModel,]</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">out_df &lt;-<span class="st"> </span><span class="kw">data.frame</span>(out)
+out_df[out_df$regModel !=<span class="st"> </span>out_df$logRegModel,]</code></pre></div>
 <pre><code>##    CorrectGreater ttbModel regModel logRegModel
 ## 1               1        0        1          -1
 ## 2               1        0        1          -1
@@ -250,43 +268,47 @@ out_df[out_df$regModel !=<span class="st"> </span>out_df$logRegModel,]</code></p
 ## 30             -1        0       -1           1</code></pre>
 </div>
 </div>
-<div id="distributing-guesses-and-ties-to-get-stats" class="section level1">
-<h1>Distributing guesses and ties to get stats</h1>
+<div id="distributing-guesses-and-ties" class="section level1">
+<h1>Distributing guesses and ties</h1>
 <p>In order to calculate percentCorrect from the confusion matrix, we need to handle the guesses. Heuristica offers a function that allocates these by their expected values, so half the guess counts are moved to +1 and half are moved to -1. Then the guess row can be removed. (Note that there are other ways to handle guesses, e.g. counting them all as correct or not counting them at all.)</p>
 <p>Below we see the original matrix and how it looks after having guesses distributed by <code>collapseConfusionMatrix3x3To2x2</code>. (Likewise it distributes half the ties to +1 and half to -1, although in this data set there were no ties.)</p>
-<pre class="sourceCode r"><code class="sourceCode r">confusion_matrix_3x3_ttb</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">confusion_matrix_3x3_ttb</code></pre></div>
 <pre><code>##        predictions
 ## correct -1 0 1
 ##      -1  7 6 2
 ##      0   0 0 0
 ##      1   2 6 7</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r">confusion_matrix_ttb &lt;-<span class="st"> </span><span class="kw">collapseConfusionMatrix3x3To2x2</span>(confusion_matrix_3x3_ttb)
-confusion_matrix_ttb</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">confusion_matrix_ttb &lt;-<span class="st"> </span><span class="kw">collapseConfusionMatrix3x3To2x2</span>(confusion_matrix_3x3_ttb)
+confusion_matrix_ttb</code></pre></div>
 <pre><code>##        predictions
 ## correct -1  1
 ##      -1 10  5
 ##      1   5 10</code></pre>
 <p>The number of correct predictions is along the diagonal– where correct was -1 and the prediction was -1 and where correct was 1 and the prediction was 1. So the percent correct is the sum of the diagonal divided by the sum of the whole matrix.</p>
-<pre class="sourceCode r"><code class="sourceCode r">percent_correct_ttb &lt;-<span class="st"> </span><span class="dv">100</span> *<span class="kw">sum</span>(<span class="kw">diag</span>(confusion_matrix_ttb)) /<span class="st"> </span><span class="kw">sum</span>(confusion_matrix_ttb)
-percent_correct_ttb</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">percent_correct_ttb &lt;-<span class="st"> </span><span class="dv">100</span> *<span class="kw">sum</span>(<span class="kw">diag</span>(confusion_matrix_ttb)) /<span class="st"> </span><span class="kw">sum</span>(confusion_matrix_ttb)
+percent_correct_ttb</code></pre></div>
 <pre><code>## [1] 66.66667</code></pre>
 <p>This agrees with the output of heuristica’s one-step <code>percentCorrect</code> function would tell us.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">percentCorrect</span>(train_data, ttb)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">percentCorrect</span>(train_data, ttb)</code></pre></div>
 <pre><code>##   ttbModel
 ## 1 66.66667</code></pre>
 <p>Now distribute guesses for the regression models. Funnily enough, we end up with the same confusion matrix and accuracy as Take The Best. In other words, the additional “predictions” that regression models made did no better than Take The Best’s guesses! (Perhaps a regression user would be “overconfident.”)</p>
-<pre class="sourceCode r"><code class="sourceCode r">confusion_matrix_3x3_reg</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">confusion_matrix_3x3_reg</code></pre></div>
 <pre><code>##        predictions
 ## correct -1 0 1
 ##      -1  9 2 4
 ##      0   0 0 0
 ##      1   4 2 9</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r">confusion_matrix_reg &lt;-<span class="st"> </span><span class="kw">collapseConfusionMatrix3x3To2x2</span>(confusion_matrix_3x3_reg)
-confusion_matrix_reg</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">confusion_matrix_reg &lt;-<span class="st"> </span><span class="kw">collapseConfusionMatrix3x3To2x2</span>(confusion_matrix_3x3_reg)
+confusion_matrix_reg</code></pre></div>
 <pre><code>##        predictions
 ## correct -1  1
 ##      -1 10  5
 ##      1   5 10</code></pre>
+<div id="alternatives" class="section level2">
+<h2>Alternatives</h2>
+<p>Note that thre are altenative options. Simsek and Buckman (2015) counted all ties as correct rather than half correct. They did, however, have the same handling of guesses, counting half of guesses as correct. Citation: Simsek, Özgür, and Buckmann, Marcus. (2015). Learning From Small Samples: An Analysis of Simple Decision Heuristics. Advances in Neural Information Processing Systems 28.</p>
+</div>
 <div id="statistics" class="section level2">
 <h2>Statistics</h2>
 <p>So why bother with the confusion matrix? Because it gives us insight into the details of how the algorithms achieve their percent correct. We now know that Take The Best guessed 3 times more on this data set than regressions models. And with the confusion matrix, we can calculate a variety of stats in addition to accuracy:</p>
@@ -297,7 +319,7 @@ confusion_matrix_reg</code></pre>
 <li>precision = positive predictive velue = true positive rate</li>
 </ul>
 <p>Since all the models ended up with the same confusion matrix, we only need to calculate these stats once. But when models differ, the stats can be enlightening.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">statsFromConfusionMatrix</span>(confusion_matrix_ttb)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">statsFromConfusionMatrix</span>(confusion_matrix_ttb)</code></pre></div>
 <pre><code>## $accuracy
 ## [1] 0.6666667
 ## 
@@ -310,11 +332,62 @@ confusion_matrix_reg</code></pre>
 ## $precision
 ## [1] 0.6666667</code></pre>
 <p>Surprised? Symmetric models will always have this pattern where all four values are the same. Why? Suppose the forward row pair matrix looks like this:</p>
-<p>  a | b |<br />  c | d |</p>
+<table>
+<tr>
+<td>
+a
+</td>
+<td>
+b
+</td>
+</tr>
+<tr>
+<td>
+c
+</td>
+<td>
+d
+</td>
+</tr>
+</table>
 <p>The as described above, running the reverse row pairs will produce counts with rows and columns reversed:</p>
-<p>  d | c |<br />  b | a |</p>
+<table>
+<tr>
+<td>
+d
+</td>
+<td>
+c
+</td>
+</tr>
+<tr>
+<td>
+b
+</td>
+<td>
+a
+</td>
+</tr>
+</table>
 <p>Summing these gives the total counts:</p>
-<p>a + d | b + c |<br />b + c | a + d |</p>
+<table>
+<tr>
+<td>
+a + d
+</td>
+<td>
+b + c
+</td>
+</tr>
+<tr>
+<td>
+b + c
+</td>
+<td>
+a + d
+</td>
+</tr>
+</table>
 <p>All the statistics on this matrix– accuracy, sensitivity, specificity, and precision, reduce to (a+d) / (a + b + c + d).</p>
 </div>
 </div>

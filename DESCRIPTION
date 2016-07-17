@@ -1,6 +1,6 @@
 Package: heuristica
 Title: Heuristics Including Take the Best and Unit-Weight Linear
-Version: 1.0.0
+Version: 1.0.1
 Authors@R: c(
 	person("Jean", "Whitmore", email = "jeanimal@gmail.com",
                   role = c("aut", "cre")),
@@ -25,9 +25,9 @@ Suggests: devtools, ggplot2, glmnet, knitr, plyr, reshape, reshape2,
 VignetteBuilder: knitr
 RoxygenNote: 5.0.1
 NeedsCompilation: no
-Packaged: 2016-06-18 03:03:57 UTC; jeanwhitmore
+Packaged: 2016-07-17 17:26:08 UTC; jeanwhitmore
 Author: Jean Whitmore [aut, cre],
   Daniel Barkoczi [aut]
 Maintainer: Jean Whitmore <jeanimal@gmail.com>
 Repository: CRAN
-Date/Publication: 2016-06-18 15:31:12
+Date/Publication: 2016-07-17 20:08:25

@@ -14,5 +14,5 @@ min <- minModel(data_set, criterion_col, cols_to_fit)
 ## ------------------------------------------------------------------------
 out <- percentCorrectList(data_set, list(reg, ttb, unit, min))
 # Round values to make comparison easier.
-round(100*out)
+round(out)
 

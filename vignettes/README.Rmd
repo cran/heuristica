@@ -4,7 +4,7 @@ author: "Jean Czerlinski Whitmore"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteIndexEntry{README}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -62,7 +62,7 @@ Both Take The Best and regression give a higher weight to `Low_Income_Students` 
 
 To see a model's predictions, we use the `predictPair` function.  It takes two rows of data-- which together comprise a "row pair"-- and the fitted model.  `predictPair` outputs three possible values:
 
-* 1 predicst the first row passed to it
+* 1 predicts the first row passed to it.
 * -1 predicts the second row passed to it.
 * 0 is a guess.
 
@@ -156,4 +156,7 @@ Gigerenzer, G., Todd, P. M., & the ABC Group (1999). [Simple heuristics that mak
 The research was also inspried by:
 Dawes, Robyn M. (1979). "The robust beauty of improper linear models in decision making". American Psychologist, volume 34, pages 571-582. [archived pdf](http://www.cmu.edu/dietrich/sds/docs/dawes/the-robust-beauty-of-improper-linear-models-in-decision-making.pdf)
 
+# Acknowledgements
+
+Thanks for coding advice and beta testing go to Marcus Buckmann, Daniel G. Goldstein, and Özgür Simsek.
 
