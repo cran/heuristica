@@ -15,15 +15,15 @@ crossV <- function(vec_of_models, criterion_col, cols_to_fit, data, reps,trainin
   fitting <- vector()
   prediction <- vector()
   for(i in 1:reps){
-    
+
     #randomly sample training and test row indexes
     train <- sample(1:nrow(data), nrow(data)*training_proportion)
     test <- setdiff(1:nrow(data), train)
-   
+
     #create training and test set
     training_set <- data[train,]
     test_set <- data[test,]
-    
+
     # If a regression is overdetermined (e.g. has too many columns(), it will
     # drop the right-most columns.  To instead make it drop random columns,
     # we shuffle the column order.
@@ -43,8 +43,10 @@ crossV <- function(vec_of_models, criterion_col, cols_to_fit, data, reps,trainin
     prediction <- rbind(prediction,predictionAccuracy)
   }
 
-  return (rbind(colMeans(fitting),colMeans(prediction)))
-} 
+  results <- (rbind(colMeans(fitting),colMeans(prediction)))
+  rownames(results) <- c("Fitting","Prediction")
+  results
+}
 
 ## ------------------------------------------------------------------------
 data("city_population")
@@ -56,6 +58,7 @@ cols_to_fit <- 4:ncol(data_set)
 reps <- 100
 training_proportion <- 0.5
 results <- crossV(vec_of_models, criterion_col, cols_to_fit, data_set, reps,training_proportion)
+round(results, 1)
 
 ## ----fig.width=7, fig.height=5-------------------------------------------
 library(ggplot2)
@@ -85,6 +88,4 @@ ggplot(p, aes(x=condition, y=value, colour=model,group=model)) +
   geom_line() + 
   geom_point() + 
   xlab("Condition") + ylab("Proportion correct")
-
-
 

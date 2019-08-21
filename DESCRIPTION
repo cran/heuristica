@@ -1,10 +1,10 @@
 Package: heuristica
 Title: Heuristics Including Take the Best and Unit-Weight Linear
-Version: 1.0.1
+Version: 1.0.2
 Authors@R: c(
 	person("Jean", "Whitmore", email = "jeanimal@gmail.com",
                   role = c("aut", "cre")),
-	person("Daniel", "Barkoczi", email = "barkoczi@mpib-berlin.mpg.de",
+	person("Daniel", "Barkoczi", email = "dnlbrkc@gmail.com",
 		role = "aut")
 	)
 Description: Implements various heuristics like Take The Best and
@@ -21,13 +21,13 @@ Imports: Hmisc
 URL: https://github.com/jeanimal/heuristica
 BugReports: https://github.com/jeanimal/heuristica/issues
 Suggests: devtools, ggplot2, glmnet, knitr, plyr, reshape, reshape2,
-        testthat, rmarkdown
+        rmarkdown, testthat
 VignetteBuilder: knitr
-RoxygenNote: 5.0.1
+RoxygenNote: 6.1.1
 NeedsCompilation: no
-Packaged: 2016-07-17 17:26:08 UTC; jeanwhitmore
+Packaged: 2019-08-19 14:36:33 UTC; jeanwhitmore
 Author: Jean Whitmore [aut, cre],
   Daniel Barkoczi [aut]
 Maintainer: Jean Whitmore <jeanimal@gmail.com>
 Repository: CRAN
-Date/Publication: 2016-07-17 20:08:25
+Date/Publication: 2019-08-21 09:00:02 UTC

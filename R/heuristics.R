@@ -416,6 +416,42 @@ predictPairInternal.validityWeightModel <- function(object, row1, row2) {
   return(direction_plus_minus_1)
 }
 
+### Tally model not released, same as unit weighted ###
+tallyModel <- function(train_data, criterion_col, cols_to_fit) {
+  stopIfTrainingSetHasLessThanTwoRows(train_data)
+  cv <- cueValidityComplete(train_data, criterion_col, cols_to_fit,
+                            reverse_cues = TRUE)
+  linear_coef <- cv$cue_directions
+  structure(list(criterion_col = criterion_col, cols_to_fit = cols_to_fit,
+                 linear_coef = linear_coef),
+            class = "tallyModel")
+}
+
+predictPairInternal.tallyModel <- function(object, row1, row2) {
+  
+  # Multiply each cue by its cue direction
+  coefficient <- object$linear_coef
+  A <- row1 * coefficient
+  B <- row2 * coefficient
+  
+  votes <- A-B
+  # Count number of cues in favor of object A.
+  T <- length(votes[votes > 0])
+  # Count number of cues in favor of object B.
+  F <- length(votes[votes < 0])
+  
+  # Predict A if majority of votes are in favor of A
+  if(T > F){
+    prediction <- 1
+  } else if (T < F) {
+    prediction <- -1
+  } else {
+    prediction <- 0
+  }
+  
+  return(prediction)
+}
+
 ### Wrappers for linear regression models ###
 
 #' Documentation stub. Just to share documentation.
