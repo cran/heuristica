@@ -4,14 +4,19 @@
 \alias{logRegModel}
 \title{Logistic Regression model using cue differences as predictors}
 \usage{
-logRegModel(train_data, criterion_col, cols_to_fit,
-  cue_order_fn = rankByCueValidity, suppress_warnings = TRUE,
-  fit_name = "logRegModel")
+logRegModel(
+  train_data,
+  criterion_col,
+  cols_to_fit,
+  cue_order_fn = rankByCueValidity,
+  suppress_warnings = TRUE,
+  fit_name = "logRegModel"
+)
 }
 \arguments{
 \item{train_data}{Training/fitting data as a matrix or data.frame.}
 
-\item{criterion_col}{The index of the colum in train_data that has the
+\item{criterion_col}{The index of the column in train_data that has the
 criterion.}
 
 \item{cols_to_fit}{A vector of column indices in train_data, used to fit
@@ -42,7 +47,7 @@ fits the model with R's glm function.
 This version assumes you do not want to include the intercept.
 
 For a discussion of how logistic regression works, see:
-http://www.r-bloggers.com/what-does-a-generalized-linear-model-do/
+https://www.r-bloggers.com/what-does-a-generalized-linear-model-do/
 Note that our criterion is the probability that row 1 is greater than row 2
 when a pair is encountered.
 }

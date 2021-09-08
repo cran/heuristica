@@ -1,3 +1,9 @@
+# heuristica 1.0.3
+
+* Fixed a unit test that had warning turned to error.  
+* No functionality updates.
+* Minor updates to some documentation (e.g. http -> https).
+
 # heuristica 1.0.2
 
 * Updated to Roxygen version 6 and re-generated documentation with it-- some changes to newlines.

@@ -4,13 +4,18 @@
 \alias{minModel}
 \title{Minimalist Model}
 \usage{
-minModel(train_data, criterion_col, cols_to_fit, reverse_cues = TRUE,
-  fit_name = "minModel")
+minModel(
+  train_data,
+  criterion_col,
+  cols_to_fit,
+  reverse_cues = TRUE,
+  fit_name = "minModel"
+)
 }
 \arguments{
 \item{train_data}{Training/fitting data as a matrix or data.frame.}
 
-\item{criterion_col}{The index of the colum in train_data that has the
+\item{criterion_col}{The index of the column in train_data that has the
 criterion.}
 
 \item{cols_to_fit}{A vector of column indices in train_data, used to fit
@@ -23,6 +28,11 @@ Set this to FALSE if you do not want that, i.e. the cue stays validity 0.}
 
 \item{fit_name}{Optional The name other functions can use to label output.
 It defaults to the class name.}
+}
+\value{
+An object of \code{\link[base]{class}} minModel, which can be
+passed to a variety of functions to make predictions, e.g.
+\code{\link{predictPair}} and \code{\link{percentCorrectList}}.
 }
 \description{
 Fit the Minimalist heuristic by specifying columns and a dataset. It

@@ -1,7 +1,7 @@
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 library(heuristica)
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 data_set <- city_population_original
 criterion_col <- 3    # Population
 cols_to_fit <- 4:ncol(data_set) # The 9 cues
@@ -11,12 +11,12 @@ ttb <- ttbModel(data_set, criterion_col, cols_to_fit)
 unit <- unitWeightModel(data_set, criterion_col, cols_to_fit)
 min <- minModel(data_set, criterion_col, cols_to_fit)
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 results <- percentCorrectList(data_set, list(reg, ttb, unit, min))
 # Round values to make comparison easier.
 round(results)
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 # Cross-validate the data over the vector of models, suing training-proportion
 # of the data to train and the rest as a test set.  Outputs the mean percent
 # correct for each model in fitting and in prediction.
@@ -57,7 +57,7 @@ crossV <- function(vec_of_models, criterion_col, cols_to_fit, data, reps, traini
   results
 }
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 set.seed(0) # Use the same seed if you want to reproduce same results.
 reps <- 200 # The book used 10,000 but that takes minutes.
 training_proportion <- 0.5
@@ -66,7 +66,7 @@ results <- crossV(c(regInterceptModel, ttbModel, unitWeightModel, minModel), cri
 # Round values to make comparison easier.
 round(results, 1)
 
-## ----fig.width=7, fig.height=5-------------------------------------------
+## ----fig.width=7, fig.height=5------------------------------------------------
 library(ggplot2)
 library(reshape)
 p <- melt(results)

@@ -46,7 +46,7 @@ predictProbInternal <- function(object, row1, row2) UseMethod("predictProbIntern
 
 #' Documentation stub.  Just a way to share parameter documentation.
 #' @param train_data Training/fitting data as a matrix or data.frame.
-#' @param criterion_col The index of the colum in train_data that has the
+#' @param criterion_col The index of the column in train_data that has the
 #'   criterion.
 #' @param cols_to_fit A vector of column indices in train_data, used to fit
 #'   the criterion.
@@ -130,7 +130,7 @@ getWeightedCuePairDiffs <- function(coefficients, row1, row2) {
 #'  way: Models of bounded rationality". Psychological Review, 103, 650-669.
 #' @references
 #' Wikipedia's entry on
-#' \url{http://en.wikipedia.org/wiki/Take-the-best_heuristic}.
+#' \url{https://en.wikipedia.org/wiki/Take-the-best_heuristic}.
 #'
 #' @export
 ttbModel <- function(train_data, criterion_col, cols_to_fit,
@@ -315,7 +315,7 @@ predictPairInternal.ttbGreedyModel <- function(object, row1, row2) {
 #'   \itemize{
 #'    \item "cue_validities": A list of cue validities for the cues in order of
 #'      cols_to_fit.
-#'    \item "linear_coef": A list of linear model coefficents (-1 or +1)
+#'    \item "linear_coef": A list of linear model coefficients (-1 or +1)
 #'           for the cues in order of cols_to_fit.  (It can only return -1's if
 #'           reverse_cues=TRUE.)
 #'   }
@@ -332,7 +332,7 @@ predictPairInternal.ttbGreedyModel <- function(object, row1, row2) {
 #' 
 #' @references
 #' Wikipedia's entry on
-#' \url{http://en.wikipedia.org/wiki/Unit-weighted_regression}.
+#' \url{https://en.wikipedia.org/wiki/Unit-weighted_regression}.
 #'
 #' @param reverse_cues Optional parameter to reverse cues as needed.
 #' @export
@@ -700,7 +700,7 @@ logRegModelGeneral <- function(train_data, criterion_col, cols_to_fit,
 #' This version assumes you do not want to include the intercept.
 #' 
 #' For a discussion of how logistic regression works, see:
-#' http://www.r-bloggers.com/what-does-a-generalized-linear-model-do/
+#' https://www.r-bloggers.com/what-does-a-generalized-linear-model-do/
 #' Note that our criterion is the probability that row 1 is greater than row 2
 #' when a pair is encountered.
 #' 
@@ -790,6 +790,9 @@ predictProbInternal.logRegModel <- function(object, row1, row2) {
 #' @inheritParams zzDocumentationStubReverseCues
 #' @param fit_name Optional The name other functions can use to label output.
 #'   It defaults to the class name.
+#' @return An object of \code{\link[base]{class}} singleCueModel, which can be
+#' passed to a variety of functions to make predictions, e.g.
+#' \code{\link{predictPair}} and \code{\link{percentCorrectList}}.
 #'
 #' @examples
 #' ##Fit column (5,4) to column (1,0), having validity 1.0, and column (0,1),
@@ -840,6 +843,9 @@ predictPairInternal.singleCueModel <- function(object, row1, row2) {
 #' @inheritParams zzDocumentationStubReverseCues
 #' @param fit_name Optional The name other functions can use to label output.
 #'   It defaults to the class name. 
+#' @return An object of \code{\link[base]{class}} minModel, which can be
+#' passed to a variety of functions to make predictions, e.g.
+#' \code{\link{predictPair}} and \code{\link{percentCorrectList}}.
 #' @examples
 #' ## Fit column (5,4) to column (1,0), having validity 1.0, and column (0,1),
 #' ## validity 0.

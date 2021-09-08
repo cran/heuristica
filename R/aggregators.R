@@ -104,7 +104,7 @@ heuristicsListGroupedByColsToFit <- function(fitted_heuristic_list, fn) {
 #'   and cols_to_fit as the data heuristics were fit to.
 #' @param fitted_heuristic_list A list of one or more heuristics fitted to
 #'   data, e.g. the output of ttbModel.
-#' @return A one-row matrix of numbers from 0 to 100, the percent correc
+#' @return A one-row matrix of numbers from 0 to 100, the percent correct
 #'   of each heuristic.  Each column is named with the heuristic's class or
 #'   the fit name.
 #'
@@ -249,7 +249,7 @@ percentCorrect <- function(test_data, ...) {
 #'   the fit name.
 #'
 #' @seealso
-#' \code{\link{percentCorrectList}} which is faster but wil only be accurate
+#' \code{\link{percentCorrectList}} which is faster but will only be accurate
 #'   for symmetric heuristics.  (percentCorrectListNonSymmetric will be
 #'   accurate for both symmetric and non-symmetric heuristics, but it's slower.)
 #' @export

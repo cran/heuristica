@@ -4,13 +4,18 @@
 \alias{ttbModel}
 \title{Take The Best}
 \usage{
-ttbModel(train_data, criterion_col, cols_to_fit, reverse_cues = TRUE,
-  fit_name = "ttbModel")
+ttbModel(
+  train_data,
+  criterion_col,
+  cols_to_fit,
+  reverse_cues = TRUE,
+  fit_name = "ttbModel"
+)
 }
 \arguments{
 \item{train_data}{Training/fitting data as a matrix or data.frame.}
 
-\item{criterion_col}{The index of the colum in train_data that has the
+\item{criterion_col}{The index of the column in train_data that has the
 criterion.}
 
 \item{cols_to_fit}{A vector of column indices in train_data, used to fit
@@ -66,7 +71,7 @@ Gigerenzer, G. & Goldstein, D. G. (1996). "Reasoning the fast and frugal
  way: Models of bounded rationality". Psychological Review, 103, 650-669.
 
 Wikipedia's entry on
-\url{http://en.wikipedia.org/wiki/Take-the-best_heuristic}.
+\url{https://en.wikipedia.org/wiki/Take-the-best_heuristic}.
 }
 \seealso{
 \code{\link{cueValidity}} for the metric used to sort cues.

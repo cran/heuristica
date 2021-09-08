@@ -8,7 +8,9 @@ output: github_document
 
 
 
-The `heuristica` R package implements [heuristic](http://en.wikipedia.org/wiki/Heuristic) decision models, such as [Take The Best](http://en.wikipedia.org/wiki/Take-the-best_heuristic) (TTB) and a [unit-weighted linear model](http://en.wikipedia.org/wiki/Unit-weighted_regression).  The models are designed for two-alternative choice tasks, such as which of two schools has a higher drop-out rate.  The package also wraps more well-known models like regression and logistic regression into the two-alternative choice framework so all these models can be assessed side-by-side.  It provides functions to measure accuracy, such as an overall `percentCorrect` and, for advanced users, some [confusion matrix](https://en.wikipedia.org/wiki/Confusion_matrix) functions.  These measures can be applied in-sample or out-of-sample.
+[![](https://cranlogs.r-pkg.org/badges/heuristica)](https://cran.r-project.org/package=heuristica)
+
+The `heuristica` R package implements [heuristic](https://en.wikipedia.org/wiki/Heuristic) decision models, such as [Take The Best](https://en.wikipedia.org/wiki/Take-the-best_heuristic) (TTB) and a [unit-weighted linear model](https://en.wikipedia.org/wiki/Unit-weighted_regression).  The models are designed for two-alternative choice tasks, such as which of two schools has a higher drop-out rate.  The package also wraps more well-known models like regression and logistic regression into the two-alternative choice framework so all these models can be assessed side-by-side.  It provides functions to measure accuracy, such as an overall `percentCorrect` and, for advanced users, some [confusion matrix](https://en.wikipedia.org/wiki/Confusion_matrix) functions.  These measures can be applied in-sample or out-of-sample.
 
 The goal is to make it easy to explore the range of conditions in which simple heuristics are better than more complex models.  Optimizing is not always better!
 
@@ -42,20 +44,22 @@ Let's fit two models:
 
 
 ```r
+library(heuristica)
+#> Error in library(heuristica): there is no package called 'heuristica'
 criterion_col <- 2
 ttb <- ttbModel(schools, criterion_col, c(3:4))
+#> Error in ttbModel(schools, criterion_col, c(3:4)): could not find function "ttbModel"
 reg <- regModel(schools, criterion_col, c(3:4))
+#> Error in regModel(schools, criterion_col, c(3:4)): could not find function "regModel"
 ```
 
 What do the fits look like?  We can examine Take The Best's cue validities and the regression coefficients.
 
 ```r
 ttb$cue_validities
-#>      Low_Income_Students Limited_English_Students 
-#>                0.6000000                0.5555556
+#> Error in eval(expr, envir, enclos): object 'ttb' not found
 coef(reg)
-#>      Low_Income_Students Limited_English_Students 
-#>               0.24985315               0.07322294
+#> Error in coef(reg): object 'reg' not found
 ```
 Both Take The Best and regression give a higher weight to `Low_Income_Students` than `Limited_English_Students`, although of course how they use the weights differs.  Take The Best will use a lexicographic order, making its prediction based solely on `Low_Income_Students` as long as the schools have differing values-- which they do for all 5 schools in this data set.  That means it will ignore `Limited_English_Students` when predicting on this data set.  In contrast, regression will use a weighted sum of both cues, but with the most important cues weighted more.  
 
@@ -71,16 +75,16 @@ In Bowen vs. Collins, it outputs 1, meaning it predicts Bowen has a higher dropo
 
 ```r
 predictPair(subset(schools, Name=="Bowen"), subset(schools, Name=="Collins"), ttb)
-#> [1] 1
+#> Error in predictPair(subset(schools, Name == "Bowen"), subset(schools, : could not find function "predictPair"
 predictPair(subset(schools, Name=="Bowen"), subset(schools, Name=="Fenger"), ttb)
-#> [1] -1
+#> Error in predictPair(subset(schools, Name == "Bowen"), subset(schools, : could not find function "predictPair"
 ```
 
 Note that the output depends on the order of the rows.  In the reversed pair of Collins vs. Bowen, the output is -1.  This is consistent because it still picks Bowen, regardless of order.
 
 ```r
 predictPair(subset(schools, Name=="Collins"), subset(schools, Name=="Bowen"), ttb)
-#> [1] -1
+#> Error in predictPair(subset(schools, Name == "Collins"), subset(schools, : could not find function "predictPair"
 ```
 
 
@@ -91,26 +95,19 @@ It is tedious to predict one row pair at a time, so let's use heurstica's `predi
 
 ```r
 out <- predictPairSummary(schools, ttb, reg)
+#> Error in predictPairSummary(schools, ttb, reg): could not find function "predictPairSummary"
 # See the first row: It has row indexes.
 out[1,]
-#>           Row1           Row2 CorrectGreater       ttbModel       regModel 
-#>              1              2              1              1             -1
+#> Error in eval(expr, envir, enclos): object 'out' not found
 # Convert indexes to school names for easier interpretation
 out_df <- data.frame(out)
+#> Error in data.frame(out): object 'out' not found
 out_df$Row1 <- schools$Name[out_df$Row1]
+#> Error in eval(expr, envir, enclos): object 'out_df' not found
 out_df$Row2 <- schools$Name[out_df$Row2]
+#> Error in eval(expr, envir, enclos): object 'out_df' not found
 out_df
-#>       Row1    Row2 CorrectGreater ttbModel regModel
-#> 1    Bowen Collins              1        1       -1
-#> 2    Bowen  Fenger             -1       -1        1
-#> 3    Bowen  Juarez              1        1       -1
-#> 4    Bowen   Young              1       -1        1
-#> 5  Collins  Fenger             -1       -1        1
-#> 6  Collins  Juarez             -1       -1       -1
-#> 7  Collins   Young              1       -1        1
-#> 8   Fenger  Juarez              1        1       -1
-#> 9   Fenger   Young              1       -1        1
-#> 10  Juarez   Young              1       -1        1
+#> Error in eval(expr, envir, enclos): object 'out_df' not found
 ```
 
 The first row shows the Bowen vs. Collins example we considered above.  Because CorrectGreater is 1, that means TTB predicted it correctly-- Bowen really does have a higher drop-out rate.  But regression predicted -1 for this row pair, which is incorrect.
@@ -121,15 +118,15 @@ predictPairSummary is for beginners.  heuristica offers full flexibility in outp
 ```r
 # Same as predictPairSummary.
 out_same <- rowPairApply(schools, rowIndexes(), correctGreater(criterion_col), heuristics(ttb, reg))
+#> Error in rowPairApply(schools, rowIndexes(), correctGreater(criterion_col), : could not find function "rowPairApply"
 out_same[1,]
-#>           Row1           Row2 CorrectGreater       ttbModel       regModel 
-#>              1              2              1              1             -1
+#> Error in eval(expr, envir, enclos): object 'out_same' not found
 
 # Show first the heuristic predictions, then CorrectGreater.  No row indexes.
 out_simple <- rowPairApply(schools, heuristics(ttb, reg), correctGreater(criterion_col))
+#> Error in rowPairApply(schools, heuristics(ttb, reg), correctGreater(criterion_col)): could not find function "rowPairApply"
 out_simple[1,]
-#>       ttbModel       regModel CorrectGreater 
-#>              1             -1              1
+#> Error in eval(expr, envir, enclos): object 'out_simple' not found
 ```
 
 ## Assessing Overall Performance
@@ -138,8 +135,7 @@ For an overall measure of performance, we can measure the percent of correct inf
 
 ```r
 percentCorrect(schools, ttb, reg)
-#>   ttbModel regModel
-#> 1       60       50
+#> Error in percentCorrect(schools, ttb, reg): could not find function "percentCorrect"
 ```
 
 Take The Best got 60% correct and regression got 50% correct, which is the same as chance.
@@ -177,9 +173,9 @@ The package comes with the following models that you can call with predictPair.
 * `minModel`: It searches cues in a random order, making a decision based on the first cue that discriminates (has differing values on the two items / schools).
 * `regModel`: A regression model, a wrapper around R's lm to make it easier to compare with heuristics.  It fits a regression based on the column indices.  For predictPair, it predicts the criterion for each item in the pair-- e.g. estimates the drop-out rate of each school-- and then predicts the item with the higher estimate-- higher drop-out rate.  (A variant that fits with an intercept, `regInterceptModel`, is provided in order to confirm prior research results, but it is not recommended for future research.)
 * `singleCueModel`: In the fitting stage, this selects the cue with the higest cue validity.  It only uses that cue, and if the cue does not discriminate, it guesses.
-* `ttbModel`: An implementation of [Take The Best](http://en.wikipedia.org/wiki/Take-the-best_heuristic). In the fitting stage, it sorts cues in order of cue validity.  When predicting between two items, it finds the highest-validity that discriminates (has differing values on the two items) and bases its prediction on that cue, ignoring other cues.  The cue used can vary based on the cue values of the two items.
+* `ttbModel`: An implementation of [Take The Best](https://en.wikipedia.org/wiki/Take-the-best_heuristic). In the fitting stage, it sorts cues in order of cue validity.  When predicting between two items, it finds the highest-validity that discriminates (has differing values on the two items) and bases its prediction on that cue, ignoring other cues.  The cue used can vary based on the cue values of the two items.
 * `ttbGreedyModel`: Take the Best using conditional cue validity (rather than cue validity).
-* `unitWeightModel`: A [unit-weighted linear model](http://en.wikipedia.org/wiki/Unit-weighted_regression) that uses weights of +1 or -1 only.  An exception is that a cue with no variance-- every value is the same-- gets a weight of 0.  Inspired by psychologist Robyn Dawes-- see citation below.
+* `unitWeightModel`: A [unit-weighted linear model](https://en.wikipedia.org/wiki/Unit-weighted_regression) that uses weights of +1 or -1 only.  An exception is that a cue with no variance-- every value is the same-- gets a weight of 0.  Inspired by psychologist Robyn Dawes-- see citation below.
 * `validityWeightModel`: A cue-validity-weighted linear model.  (In some publications, this was called franklinModel after Ben Franklin.)
 
 You can add your own models by also implementing a function related to `predictPair`, as described in a vignette.
@@ -198,10 +194,10 @@ Take The Best was first described in:
 Gigerenzer, G. & Goldstein, D. G. (1996). "Reasoning the fast and frugal way: Models of bounded rationality". Psychological Review, 103, 650-669.
 
 All of these heuristics were run on many data sets and analyzed in:
-Gigerenzer, G., Todd, P. M., & the ABC Group (1999). [Simple heuristics that make us smart.](http://www.amazon.com/Simple-Heuristics-That-Make-Smart/dp/0195143817) New York: Oxford University Press. 
+Gigerenzer, G., Todd, P. M., & the ABC Group (1999). [Simple heuristics that make us smart.](https://www.amazon.com/Simple-Heuristics-That-Make-Smart/dp/0195143817) New York: Oxford University Press. 
 
 The research was also inspired by:
-Dawes, Robyn M. (1979). "The robust beauty of improper linear models in decision making". American Psychologist, volume 34, pages 571-582. [archived pdf](http://www.cmu.edu/dietrich/sds/docs/dawes/the-robust-beauty-of-improper-linear-models-in-decision-making.pdf)
+Dawes, Robyn M. (1979). "The robust beauty of improper linear models in decision making". American Psychologist, volume 34, pages 571-582. [archived pdf](https://www.cmu.edu/dietrich/sds/docs/dawes/the-robust-beauty-of-improper-linear-models-in-decision-making.pdf)
 
 # Acknowledgements
 

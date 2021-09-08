@@ -1,16 +1,16 @@
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 library(heuristica)
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 # Use this seed to exactly replicate my tables and graphs below.
 #set.seed(3)
 # Remove it to see a new sampling-- and whether the overall conclusions still
 # hold.
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 vec_of_models <-c(ttbModel, unitWeightModel, regModel, minModel)
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 crossV <- function(vec_of_models, criterion_col, cols_to_fit, data, reps,training_proportion){
   fitting <- vector()
   prediction <- vector()
@@ -48,19 +48,19 @@ crossV <- function(vec_of_models, criterion_col, cols_to_fit, data, reps,trainin
   results
 }
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 data("city_population")
 data_set <- city_population
 criterion_col <- 3
 cols_to_fit <- 4:ncol(data_set)
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 reps <- 100
 training_proportion <- 0.5
 results <- crossV(vec_of_models, criterion_col, cols_to_fit, data_set, reps,training_proportion)
 round(results, 1)
 
-## ----fig.width=7, fig.height=5-------------------------------------------
+## ----fig.width=7, fig.height=5------------------------------------------------
 library(ggplot2)
 library(reshape)
 rownames(results) <- c("Fitting","Prediction")
@@ -71,7 +71,7 @@ ggplot(p, aes(x=condition, y=value, colour=model,group=model)) +
   geom_point() + 
   xlab("Condition") + ylab("Proportion correct")
 
-## ----fig.width=7, fig.height=5-------------------------------------------
+## ----fig.width=7, fig.height=5------------------------------------------------
 data(highschool_dropout)
 data_set <- na.omit(highschool_dropout)
 criterion_col <- 4

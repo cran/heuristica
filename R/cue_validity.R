@@ -2,6 +2,7 @@
 # library("Hmisc")
 
 #' Documentation stub.
+#'
 #' @param reverse_cues Optional parameter to reverse cues as needed.  By
 #' default, the model will reverse the cue values for cues with cue validity
 #' < 0.5, so a cue with validity 0 becomes a cue with validity 1.
@@ -13,7 +14,7 @@ zzDocumentationStubReverseCues <- function(reverse_cues=TRUE) NULL
 #' Calculate the cue validity.
 #'
 #' Calculate the
-#' \href{http://en.wikipedia.org/wiki/Cue_validity}{cue validity}
+#' \href{https://en.wikipedia.org/wiki/Cue_validity}{cue validity}
 #' for a pair of vectors.  It is calculated as
 #' correct / (correct + incorrect).
 #'
@@ -67,7 +68,6 @@ cueValidity <- function(criterion, cue, replaceNanWith=0.5) {
 #'   validity for.
 #' @param replaceNanWith The value to return as cue validity in case it
 #'         cannot be calculated.
-#' @inheritParams zzDocumentationStubReverseCues
 #' @return A list where $cue_validities has a vector of validities for
 #'   each of the columns in cols_to_fit.
 #'
@@ -104,7 +104,7 @@ reverseAsNeeded <- function(cue_validities) {
 
 #' Calculate cue validity with reverse, cue directions, and cue ranks.
 #'
-#' This provides a vector of cue_validities and potentially other useufl
+#' This provides a vector of cue_validities and potentially other useful
 #' information, particularly if reverse_cues=TRUE.  For example, education
 #' is negatively associated with number of felonies.  If reverse_cues=FALSE,
 #' education will get validity < 0.5.  If reverse_cues=TRUE, then LESS
